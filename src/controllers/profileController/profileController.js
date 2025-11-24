@@ -64,7 +64,7 @@ const uploadAvatar = async (req, res) => {
 const getAvatar = async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
-    const imagePath = path.join(__dirname, "../../uploads/", user.profilePicture);
+    const imagePath = path.join(__dirname, "../../uploads", user.profilePicture);
 
     res.sendFile(imagePath);
   } catch (error) {

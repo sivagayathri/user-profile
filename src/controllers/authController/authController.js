@@ -1,48 +1,67 @@
-
-const user = require('../../schema/userSchema')
-const bycrypt = require('bcryptjs')
+const User = require("../../schema/userSchema");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const register = async (req, res) => {
-  const  { name, id, email, password, profile } = req.body
-    try {
+  try {
+    const { name, email, password, age } = req.body;
 
-        const hashedPassword = await bcrypt.hash(password, 10)
-
-         await user.create({
-            name, id, email, password:hashedPassword, profile 
-        })
-
-        res.send(200).json('user registeration successfully')
-    } catch (error) {
-        res.send(500).json({message:'cannot create user'})
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "Name, email, and password are required" });
     }
-}
+
+    const existing = await User.findOne({ email });
+    if (existing) {
+      return res.status(409).json({ message: "Email already registered" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      age
+    });
+
+    return res.status(201).json({ message: "User registration successful" });
+
+  } catch (error) {
+    console.error("Register Error:", error);
+    return res.status(500).json({ message: "Cannot create user" });
+  }
+};
 
 const login = async (req, res) => {
-  const  {email, password } = req.body
-    try {
-       const user =   await user.findOne({email})
-        
-        const isMatch = await bycrypt.compare(password, user.password)
-        if (!isMatch) {
-            res.send(400).json('invalid credentials')
-        }
-          token = jwt.sign(
-                {
-                    userId: existingUser.id,
-                    email: existingUser.email
-                },
-                `${process.env.SECRET}`,
-                { expiresIn: "1h" }
-            );
+  try {
+    const { email, password } = req.body;
 
-        res.send(200).json('user registeration successfully')
-    } catch (error) {
-        res.send(500).json({message:'cannot create user'})
-    }
-}
+    if (!email || !password)
+      return res.status(400).json({ message: "Email and password are required" });
 
-module.exports = { register, login }
+    const user = await User.findOne({ email });
+    if (!user)
+      return res.status(401).json({ message: "Invalid credentials" });
 
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch)
+      return res.status(401).json({ message: "Invalid credentials" });
 
+    const token = jwt.sign(
+      {
+        id: user._id,
+        email: user.email
+      },
+      process.env.SECRET,
+      { expiresIn: "1h" }
+    );
+
+    return res.status(200).json({ token });
+
+  } catch (error) {
+    console.error("Login Error:", error);
+    return res.status(500).json({ message: "Login failed" });
+  }
+};
+
+module.exports = { register, login };
