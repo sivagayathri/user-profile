@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../../schema/userSchema');
 
-exports.handleProfile = async (req, res) => {
+const handleProfile = async (req, res) => {
     const authHeader = req.headers.authorization;
     if (!authHeader)
         return res.status(401).json({ message: "Token missing" });
@@ -19,7 +19,7 @@ exports.handleProfile = async (req, res) => {
     }
 };
 
-exports.handleProfileUpdates = async (req, res) => {
+const handleProfileUpdates = async (req, res) => {
     const authHeader = req.headers.authorization;
     if (!authHeader)
         return res.status(401).json({ message: "Token missing" });
@@ -41,3 +41,36 @@ exports.handleProfileUpdates = async (req, res) => {
         res.status(500).json({ message: "Cannot update profile" });
     }
 };
+
+
+const uploadAvatar = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const fileName = req.file.filename;
+
+    await User.findByIdAndUpdate(userId, {
+      profilePicture: fileName
+    });
+
+    res.json({
+      message: "Avatar uploaded successfully",
+      avatar: fileName
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Avatar upload failed" });
+  }
+};
+
+const getAvatar = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    const imagePath = path.join(__dirname, "../../uploads/", user.profilePicture);
+
+    res.sendFile(imagePath);
+  } catch (error) {
+    res.status(404).json({ message: "Avatar not found" });
+  }
+};
+
+
+module.exports = {handleProfile,handleProfileUpdates,uploadAvatar,getAvatar}
