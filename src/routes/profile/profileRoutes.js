@@ -1,6 +1,8 @@
 
 const express = require("express");
 const ProfileRouter = express.Router();
+const { authMiddleware } = require("../../middleware/auth");
+const upload = require("../../middleware/upload");
 
 const {handleProfile,handleProfileUpdates,uploadAvatar,getAvatar} = require('../../controllers/profileController/profileController')
 

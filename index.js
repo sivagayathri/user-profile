@@ -1,8 +1,8 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
-const authRouter = require('./routes/authRoutes')
-const ProfileRouter = require('./routes/profile/profileRoutes')
+const authRouter = require('./src/routes/authRoutes/authRoutes')
+const ProfileRouter = require('./src/routes/profile/profileRoutes')
 
 app.use(express.json())
 app.use(cors())
