@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../../schema/userSchema');
+const path = require("path");
+
 
 const handleProfile = async (req, res) => {
     const authHeader = req.headers.authorization;
@@ -63,8 +65,8 @@ const uploadAvatar = async (req, res) => {
 
 const getAvatar = async (req, res) => {
   try {
-    const user = await User.findById(req.params.userId);
-    const imagePath = path.join(__dirname, "../../uploads", user.profilePicture);
+    const user = await User.findById(req.params.userId);    
+    const imagePath = path.join(__dirname, "../../../uploads", user.profilePicture);    
 
     res.sendFile(imagePath);
   } catch (error) {

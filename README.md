@@ -44,6 +44,8 @@ docker run -p 3000:3000 user-profile
 
 Testing :
 
+http://localhost:3000/api-docs
+
 Auth : auth/register
 ----------------------
 

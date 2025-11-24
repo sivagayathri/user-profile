@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const mongoose = require("mongoose");
+const { swaggerUi, swaggerSpec } = require("./swagger");
 
 const authRouter = require('./src/routes/authRoutes/authRoutes');
 const ProfileRouter = require('./src/routes/profile/profileRoutes');
@@ -10,6 +11,7 @@ const ProfileRouter = require('./src/routes/profile/profileRoutes');
 app.use(express.json());
 app.use(cors());
 
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/auth', authRouter);
 app.use('/profile', ProfileRouter);
 app.use('/uploads', express.static('uploads'))
